@@ -29,3 +29,40 @@ jobs:
                      "version": "v1.2.3"
                   }
                 }'
+  monitor-remote-job:
+    needs: trigger-repo-a
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Remote Workflow Status
+        id: check-status
+        run: |
+          REMOTE_RUN_ID=$(curl -s -H "Authorization: token ${{ secrets.REPO_A_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/Robert2305/Github-library-Generic/actions/runs?event=repository_dispatch \
+            | jq -r '.workflow_runs[0].id')
+          
+          echo "Remote Workflow Run ID: $REMOTE_RUN_ID"
+          
+          STATUS="in_progress"
+          while [ "$STATUS" == "in_progress" ] || [ "$STATUS" == "queued" ]; do
+            STATUS=$(curl -s -H "Authorization: token ${{ secrets.REPO_A_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              https://api.github.com/repos/Robert2305/Github-library-Generic/actions/runs/$REMOTE_RUN_ID \
+              | jq -r '.status')
+            echo "Current Status: $STATUS"
+            sleep 10
+          done
+          
+          CONCLUSION=$(curl -s -H "Authorization: token ${{ secrets.REPO_A_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/Robert2305/Github-library-Generic/actions/runs/$REMOTE_RUN_ID \
+            | jq -r '.conclusion')
+          
+          echo "Remote Workflow Conclusion: $CONCLUSION"
+          echo "::set-output name=remote_conclusion::$CONCLUSION"
+
+      - name: Fail if Remote Job Failed
+        if: steps.check-status.outputs.remote_conclusion != 'success'
+        run: |
+          echo "Remote job failed. Failing local workflow."
+          exit 1
