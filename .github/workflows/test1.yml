@@ -11,9 +11,6 @@ on:
           - prod
           - qa
           - dev
-  push:
-    branches:
-      - main
 
 jobs:
   trigger-repo-a:
