@@ -16,7 +16,7 @@ jobs:
             -d '{
                   "event_type": "run-jobs",
                   "client_payload": {
-                    "attribute1": "Value1",
-                    "attribute2": "Value2"
+                     "environment": "production",
+                     "version": "v1.2.3"
                   }
                 }'
