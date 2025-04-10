@@ -13,4 +13,10 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             -H "Authorization: Bearer ${{ secrets.REPO_A_TOKEN }}" \
             https://api.github.com/repos/Robert2305/Github-library-Generic/dispatches \
-            -d '{"event_type":"run-jobs"}'
+            -d '{
+                  "event_type": "run-jobs",
+                  "client_payload": {
+                    "attribute1": "Value1",
+                    "attribute2": "Value2"
+                  }
+                }'
