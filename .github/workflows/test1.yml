@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'The envirnment to sync to'
+        description: 'The envirnment to sync'
         required: true
         default: 'production'
         type: choice
