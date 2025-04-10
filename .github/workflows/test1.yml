@@ -1,7 +1,19 @@
 name: Test1
 on:
-  workflow_dispatch: # Allows you to trigger this manually
-  push:              # Optional, triggers when code is pushed
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'The envirnment to sync to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - prod
+          - qa
+          - dev
+  push:
+    branches:
+      - main
 
 jobs:
   trigger-repo-a:
